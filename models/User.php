@@ -1,76 +1,51 @@
 <?php
 
 namespace app\models;
+
 use Yii;
 
-class User extends Account implements \yii\web\IdentityInterface
+/**
+ * This is the model class for table "user".
+ *
+ * @property int $userId
+ * @property string $username
+ * @property string $email
+ * @property string $password
+ * @property int $companyId
+ */
+class User extends \yii\db\ActiveRecord
 {
-    public $authKey;
-    public $accessToken;
-
     /**
      * {@inheritdoc}
      */
-
-     public static function tableName()
-     {
-         return parent::tableName();
-     }
-
-    public static function findByUsername($username)
+    public static function tableName()
     {
-        return User::findOne(['username' => $username]);
+        return 'user';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function rules()
     {
-        return $this->userId;
-    }
-
-    /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
-     */
-    public function validatePassword($password)
-    {
-        // echo $password;
-        // echo $this->password;
-        // die;
-        return Yii::$app->getSecurity()->validatePassword($password, $this->password);
-    }
-
-
-     public static function findIdentity($id)
-     {
-         return User::findOne($id);
-     }
-
-     /**
-     * {@inheritdoc}
-     */
-    public function getAuthKey()
-    {
-        return $this->authKey;
+        return [
+            [['username', 'email', 'password', 'companyId'], 'required'],
+            [['companyId'], 'integer'],
+            [['username', 'email', 'password'], 'string', 'max' => 100],
+        ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function validateAuthKey($authKey)
+    public function attributeLabels()
     {
-        return $this->authKey === $authKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        return $token;
+        return [
+            'userId' => 'ID',
+            'username' => 'Username',
+            'email' => 'Email',
+            'password' => 'Password',
+            'companyId' => 'Company ID',
+        ];
     }
 }
